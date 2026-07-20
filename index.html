@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ductus — Dimensionamento de Dutos e Carga Térmica</title>
+<meta name="description" content="Ferramenta de triagem para dimensionamento de dutos pelo método do igual atrito e estimativa preliminar de carga térmica.">
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0e1620">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Ductus">
+<meta name="mobile-web-app-capable" content="yes">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;450;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="grid-bg" aria-hidden="true"></div>
+
+<header class="masthead">
+  <div class="wrap masthead-inner">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 40 40" width="34" height="34" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M5 12 L23 12 L35 6 M5 28 L23 28 L35 34 M23 12 L23 28" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="5" cy="20" r="2.6" fill="currentColor" stroke="none"/>
+        </svg>
+      </span>
+      <div class="brand-text">
+        <strong>Ductus</strong>
+        <span>dimensionamento de dutos · carga térmica</span>
+      </div>
+    </div>
+    <div class="masthead-actions">
+      <button class="install-btn" id="install-btn" hidden>Instalar app</button>
+      <a class="repo-link" href="#" data-repo>Ver no GitHub ↗</a>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="intro">
+    <p class="eyebrow">Ferramenta de triagem — HVAC-R</p>
+    <h1>Dimensione dutos e estime carga térmica direto no navegador.</h1>
+    <p class="lede">
+      Método do igual atrito com Darcy–Weisbach e Colebrook–White para os dutos;
+      estimativa por componentes para a carga térmica. Tudo roda offline, no seu
+      dispositivo — nada é enviado a servidor algum.
+    </p>
+  </section>
+
+  <nav class="tabs" role="tablist" aria-label="Módulos">
+    <button class="tab is-active" role="tab" aria-selected="true" aria-controls="panel-duct" id="tab-duct">
+      <span class="tab-idx">01</span> Dutos
+    </button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="panel-load" id="tab-load">
+      <span class="tab-idx">02</span> Carga térmica
+    </button>
+  </nav>
+
+  <!-- ================= MÓDULO DUTOS ================= -->
+  <section class="panel is-active" role="tabpanel" id="panel-duct" aria-labelledby="tab-duct">
+    <div class="module">
+
+      <form class="inputs" id="duct-form" novalidate>
+        <h2 class="module-title">Parâmetros do trecho</h2>
+
+        <div class="field">
+          <label for="flow">Vazão de ar</label>
+          <div class="input-row">
+            <input type="number" id="flow" value="1000" min="1" step="any" inputmode="decimal">
+            <select id="flow-unit" aria-label="Unidade de vazão">
+              <option value="ls" selected>L/s</option>
+              <option value="m3h">m³/h</option>
+              <option value="cfm">CFM</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="friction">Taxa de atrito alvo <span class="hint">Pa/m</span></label>
+          <div class="input-row">
+            <input type="range" id="friction" value="0.8" min="0.4" max="2.0" step="0.05">
+            <output id="friction-out" class="range-out">0,80</output>
+          </div>
+          <div class="scale-legend">
+            <span class="dot dot-green"></span> 0,65–1,2 recomendado (baixa velocidade)
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="material">Material do duto</label>
+          <select id="material">
+            <option value="0.09" selected>Aço galvanizado (ε = 0,09 mm)</option>
+            <option value="0.045">Alumínio (ε = 0,045 mm)</option>
+            <option value="0.9">Flexível (ε = 0,9 mm)</option>
+            <option value="3.0">Concreto (ε = 3,0 mm)</option>
+          </select>
+        </div>
+
+        <details class="advanced">
+          <summary>Ar &amp; limites</summary>
+          <div class="field">
+            <label for="airtemp">Temperatura do ar <span class="hint">°C</span></label>
+            <input type="number" id="airtemp" value="20" step="any" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label for="vmax">Velocidade máxima admissível <span class="hint">m/s</span></label>
+            <input type="number" id="vmax" value="6" step="0.5" inputmode="decimal">
+            <p class="micro">Acima disso, o resultado é sinalizado por ruído.</p>
+          </div>
+          <div class="field">
+            <label for="aspect">Relação de aspecto p/ retangular (a:b)</label>
+            <input type="number" id="aspect" value="1.5" min="1" max="6" step="0.1" inputmode="decimal">
+          </div>
+        </details>
+      </form>
+
+      <div class="results" id="duct-results" aria-live="polite">
+        <div class="gauge-card">
+          <div class="gauge-head">
+            <span class="gauge-label">Diâmetro comercial</span>
+            <span class="badge" id="duct-badge">—</span>
+          </div>
+          <div class="gauge-value"><span id="duct-diam">—</span><small>mm</small></div>
+          <div class="gauge-sub">calculado: <span id="duct-diam-calc">—</span> mm</div>
+
+          <div class="velocity-meter">
+            <div class="vm-track">
+              <span class="vm-zone vm-green"></span>
+              <span class="vm-zone vm-amber"></span>
+              <span class="vm-zone vm-red"></span>
+              <span class="vm-needle" id="vm-needle"></span>
+            </div>
+            <div class="vm-caption">
+              <span>velocidade <strong id="duct-vel">—</strong> m/s</span>
+              <span class="vm-scale">0 &nbsp;·&nbsp; 12 m/s</span>
+            </div>
+          </div>
+        </div>
+
+        <dl class="readout">
+          <div><dt>Perda por atrito</dt><dd id="duct-dpdl">—</dd></div>
+          <div><dt>Pressão dinâmica</dt><dd id="duct-pv">—</dd></div>
+          <div><dt>Reynolds</dt><dd id="duct-re">—</dd></div>
+          <div><dt>Fator de atrito f</dt><dd id="duct-f">—</dd></div>
+          <div class="readout-wide"><dt>Retangular equivalente</dt><dd id="duct-rect">—</dd></div>
+        </dl>
+
+        <p class="method-note">
+          Diâmetro arredondado para o valor comercial imediatamente superior (série
+          ISO). A perda real fica então abaixo do alvo — o sistema fica levemente
+          folgado, nunca mais apertado.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= MÓDULO CARGA TÉRMICA ================= -->
+  <section class="panel" role="tabpanel" id="panel-load" aria-labelledby="tab-load" hidden>
+    <div class="disclaimer">
+      <strong>Estimativa de triagem, não projeto.</strong> Este módulo dá uma ordem
+      de grandeza por componentes para pré-dimensionar equipamento e checar
+      viabilidade. Não substitui cálculo por NBR 16401 / ASHRAE (CLTD/RTS, dados
+      climáticos, orientação e massa térmica). Sob ART/RRT, o projeto final é do
+      responsável técnico.
+    </div>
+
+    <div class="module">
+      <form class="inputs" id="load-form" novalidate>
+        <h2 class="module-title">Ambiente</h2>
+
+        <div class="field-2">
+          <div class="field">
+            <label for="area">Área de piso <span class="hint">m²</span></label>
+            <input type="number" id="area" value="40" min="1" step="any" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label for="height">Pé-direito <span class="hint">m</span></label>
+            <input type="number" id="height" value="2.7" min="1" step="0.1" inputmode="decimal">
+          </div>
+        </div>
+
+        <div class="field-2">
+          <div class="field">
+            <label for="tin">Temp. interna <span class="hint">°C</span></label>
+            <input type="number" id="tin" value="24" step="0.5" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label for="tout">Temp. externa <span class="hint">°C</span></label>
+            <input type="number" id="tout" value="35" step="0.5" inputmode="decimal">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="envelope">Envoltória (transmissão + solar)</label>
+          <select id="envelope">
+            <option value="light">Leve / bem isolada — 90 W/m²</option>
+            <option value="medium" selected>Média — 130 W/m²</option>
+            <option value="heavy">Pesada / muito vidro / sol — 180 W/m²</option>
+          </select>
+          <p class="micro">Coeficiente por área de piso, embutindo paredes, cobertura e ganho solar típico.</p>
+        </div>
+
+        <h2 class="module-title">Ganhos internos</h2>
+
+        <div class="field-2">
+          <div class="field">
+            <label for="people">Pessoas</label>
+            <input type="number" id="people" value="6" min="0" step="1" inputmode="numeric">
+          </div>
+          <div class="field">
+            <label for="people-act">Atividade</label>
+            <select id="people-act">
+              <option value="115">Sentado / escritório — 115 W</option>
+              <option value="150" selected>Atividade leve — 150 W</option>
+              <option value="235">Em pé / movimento — 235 W</option>
+              <option value="440">Esforço intenso — 440 W</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-2">
+          <div class="field">
+            <label for="light-dens">Iluminação <span class="hint">W/m²</span></label>
+            <input type="number" id="light-dens" value="12" min="0" step="any" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label for="equip">Equipamentos <span class="hint">W</span></label>
+            <input type="number" id="equip" value="1500" min="0" step="any" inputmode="decimal">
+          </div>
+        </div>
+
+        <h2 class="module-title">Ar externo</h2>
+        <div class="field-2">
+          <div class="field">
+            <label for="oa-rate">Vazão por pessoa <span class="hint">L/s</span></label>
+            <input type="number" id="oa-rate" value="7.5" min="0" step="any" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label for="rh-out">UR externa <span class="hint">%</span></label>
+            <input type="number" id="rh-out" value="60" min="0" max="100" step="1" inputmode="decimal">
+          </div>
+        </div>
+      </form>
+
+      <div class="results" id="load-results" aria-live="polite">
+        <div class="gauge-card">
+          <div class="gauge-head">
+            <span class="gauge-label">Carga térmica total</span>
+            <span class="badge" id="load-badge">—</span>
+          </div>
+          <div class="gauge-value"><span id="load-kw">—</span><small>kW</small></div>
+          <div class="gauge-sub">
+            <span id="load-tr">—</span> TR · <span id="load-wm2">—</span> W/m²
+          </div>
+        </div>
+
+        <div class="breakdown" id="load-breakdown"></div>
+
+        <dl class="readout">
+          <div><dt>Sensível</dt><dd id="load-sens">—</dd></div>
+          <div><dt>Latente</dt><dd id="load-lat">—</dd></div>
+          <div><dt>Vazão de ar externo</dt><dd id="load-oa">—</dd></div>
+          <div><dt>Vazão de insuflamento*</dt><dd id="load-supply">—</dd></div>
+        </dl>
+        <p class="method-note">
+          * Estimada para ΔT de insuflamento de 10 °C (sensível/1,2·10). Use-a como
+          entrada da vazão no módulo de dutos.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="formula-strip">
+    <h2>O que roda por baixo</h2>
+    <div class="formula-grid">
+      <div class="formula">
+        <span class="formula-tag">Dutos — atrito</span>
+        <code>Δp/L = f · (1/D) · ρV²/2</code>
+        <p>f resolvido por Colebrook–White iterativo; D busca a taxa alvo.</p>
+      </div>
+      <div class="formula">
+        <span class="formula-tag">Retangular equivalente</span>
+        <code>D_eq = 1,30 · (a·b)^0,625 / (a+b)^0,25</code>
+        <p>Preserva vazão e perda, não a área geométrica (ASHRAE).</p>
+      </div>
+      <div class="formula">
+        <span class="formula-tag">Carga — sensível ar externo</span>
+        <code>Q_s = 1,2 · V̇ · ΔT</code>
+        <p>V̇ em L/s, ΔT em °C, resultado em W.</p>
+      </div>
+      <div class="formula">
+        <span class="formula-tag">Carga — latente ar externo</span>
+        <code>Q_l = 3010 · V̇ · Δw</code>
+        <p>Δw estimado da UR externa e das temperaturas informadas.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-inner">
+    <p>
+      <strong>Ductus</strong> — ferramenta educacional de triagem. Verifique todo
+      resultado crítico contra norma e catálogo de fabricante.
+    </p>
+    <p class="foot-meta">MIT · sem coleta de dados · roda 100% no navegador</p>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch((err) => {
+        console.warn('Service worker não registrado:', err);
+      });
+    });
+  }
+
+  let deferredPrompt = null;
+  const installBtn = document.getElementById('install-btn');
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    installBtn.hidden = false;
+  });
+  installBtn.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    installBtn.hidden = true;
+  });
+  window.addEventListener('appinstalled', () => { installBtn.hidden = true; });
+</script>
+</body>
+</html>
