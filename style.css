@@ -1,0 +1,67 @@
+:root {
+  --bg: #0e1620;
+  --panel-bg: #152232;
+  --card-bg: #1c2d42;
+  --text: #e2e8f0;
+  --text-muted: #94a3b8;
+  --accent: #38bdf8;
+  --accent-hover: #0284c7;
+  --border: #26384f;
+  --green: #22c55e;
+  --amber: #f59e0b;
+  --red: #ef4444;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', system-ui, sans-serif;
+  line-height: 1.5;
+  padding-bottom: 2rem;
+}
+
+.wrap { max-width: 900px; margin: 0 auto; padding: 0 1rem; }
+
+.masthead { border-bottom: 1px solid var(--border); padding: 1rem 0; margin-bottom: 2rem; }
+.masthead-inner { display: flex; justify-content: space-between; align-items: center; }
+.brand { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; color: inherit; }
+.brand-text { display: flex; flex-direction: column; }
+.brand-text strong { font-family: 'Archivo', sans-serif; font-size: 1.25rem; }
+.brand-text span { font-size: 0.75rem; color: var(--text-muted); }
+
+.tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border); }
+.tab {
+  background: none; border: none; color: var(--text-muted); padding: 0.75rem 1rem;
+  cursor: pointer; font-family: inherit; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;
+}
+.tab.is-active { color: var(--accent); border-bottom: 2px solid var(--accent); }
+
+.panel { display: none; }
+.panel.is-active { display: block; }
+
+.module {
+  display: grid; grid-template-columns: 1fr; gap: 1.5rem;
+  background: var(--panel-bg); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem;
+}
+@media (min-width: 768px) { .module { grid-template-columns: 1fr 1fr; } }
+
+.field { margin-bottom: 1rem; display: flex; flex-direction: column; gap: 0.25rem; }
+.field-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.input-row { display: flex; gap: 0.5rem; }
+
+input, select {
+  background: var(--bg); border: 1px solid var(--border); color: var(--text);
+  padding: 0.5rem; border-radius: 4px; font-family: inherit; width: 100%;
+}
+
+.gauge-card { background: var(--card-bg); padding: 1rem; border-radius: 6px; text-align: center; }
+.gauge-value { font-size: 2.5rem; font-weight: 800; font-family: 'IBM Plex Mono', monospace; }
+
+.readout { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 1rem; }
+.readout div { background: var(--card-bg); padding: 0.5rem; border-radius: 4px; }
+.readout dt { font-size: 0.75rem; color: var(--text-muted); }
+.readout dd { font-weight: 600; font-family: 'IBM Plex Mono', monospace; }
+
+.disclaimer { background: #3b2010; border: 1px solid #78350f; padding: 1rem; border-radius: 6px; margin-bottom: 1rem; font-size: 0.875rem; }
