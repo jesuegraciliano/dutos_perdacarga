@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ductus — dimensione dutos e estime carga térmica no navegador</title>
+<meta name="description" content="App PWA gratuito para HVAC-R: dimensionamento de dutos pelo método do igual atrito (Darcy–Weisbach + Colebrook–White) e estimativa de carga térmica. Roda offline, sem coleta de dados.">
+
+<meta property="og:title" content="Ductus — dutos e carga térmica no navegador">
+<meta property="og:description" content="Ferramenta de triagem para HVAC-R. Igual atrito, carga térmica por componentes, offline, instalável como app.">
+<meta property="og:type" content="website">
+
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="theme-color" content="#0e1620">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;450;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="landing.css">
+</head>
+<body>
+<div class="grid-bg" aria-hidden="true"></div>
+
+<!-- ===================== NAV ===================== -->
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="#top">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 40 40" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2.4">
+          <path d="M5 12 L23 12 L35 6 M5 28 L23 28 L35 34 M23 12 L23 28" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="5" cy="20" r="2.6" fill="currentColor" stroke="none"/>
+        </svg>
+      </span>
+      <strong>Ductus</strong>
+    </a>
+    <nav class="nav-links">
+      <a href="#features">Recursos</a>
+      <a href="#modules">Módulos</a>
+      <a href="#tech">Base técnica</a>
+      <a class="nav-cta" href="index.html">Abrir app ↗</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ===================== HERO ===================== -->
+  <section class="hero wrap">
+    <div class="hero-copy">
+      <p class="eyebrow">App PWA gratuito · HVAC-R</p>
+      <h1>Dimensione dutos e estime a carga térmica <span>direto no navegador.</span></h1>
+      <p class="lede">
+        Método do igual atrito com Darcy–Weisbach e Colebrook–White resolvidos de
+        verdade. Estimativa de carga por componentes. Roda 100% offline no seu
+        dispositivo — nada é enviado a servidor algum.
+      </p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="index.html">Abrir o app</a>
+        <a class="btn btn-ghost" href="#install">Instalar no celular</a>
+      </div>
+      <ul class="hero-badges">
+        <li>✓ Sem cadastro</li>
+        <li>✓ Sem coleta de dados</li>
+        <li>✓ Funciona offline</li>
+        <li>✓ Código aberto (MIT)</li>
+      </ul>
+    </div>
+    <div class="hero-shot">
+      <div class="phone">
+        <img src="assets/screen-mobile.png" alt="Tela do app Ductus no celular, mostrando o dimensionamento de um duto" loading="eager">
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FEATURES ===================== -->
+  <section class="section wrap" id="features">
+    <p class="section-tag">Por que usar</p>
+    <div class="feature-grid">
+      <article class="feature">
+        <div class="feature-ic" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3-8 4 16 3-8h4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>Física real, não tabela decorada</h3>
+        <p>Colebrook–White iterativo para o fator de atrito, propriedades do ar recalculadas com a temperatura. O diâmetro sai da busca pela taxa de atrito alvo, não de um chute.</p>
+      </article>
+      <article class="feature">
+        <div class="feature-ic" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M5 21V9m14 12V13M5 9l7-5 7 4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>Velocímetro com faixa de ruído</h3>
+        <p>O resultado sinaliza quando a velocidade estoura o limite. Dimensionar só pela taxa de atrito e ignorar o ruído é o erro clássico — aqui ele fica visível.</p>
+      </article>
+      <article class="feature">
+        <div class="feature-ic" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 20V10" stroke-linecap="round"/></svg>
+        </div>
+        <h3>Carga por componentes</h3>
+        <p>Envoltória, pessoas, iluminação, equipamentos e ar externo, separando sensível e latente. Sugere a vazão de insuflamento que alimenta o módulo de dutos.</p>
+      </article>
+      <article class="feature">
+        <div class="feature-ic" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+        </div>
+        <h3>Roda offline, no navegador</h3>
+        <p>Depois da primeira visita, funciona sem internet. Instale como app e use na obra, no laboratório ou em campo, sem depender de sinal.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ===================== MODULES / SCREENS ===================== -->
+  <section class="section wrap" id="modules">
+    <p class="section-tag">Os dois módulos</p>
+
+    <div class="module-showcase">
+      <div class="showcase-copy">
+        <span class="showcase-idx">01</span>
+        <h2>Dimensionamento de dutos</h2>
+        <p>
+          Informe vazão, taxa de atrito alvo e material. O app devolve o diâmetro
+          comercial da série ISO, a velocidade real, a perda por metro, o número de
+          Reynolds, o fator de atrito e a seção retangular equivalente.
+        </p>
+        <ul class="check-list">
+          <li>Vazão em L/s, m³/h ou CFM</li>
+          <li>Arredondamento para o diâmetro comercial superior</li>
+          <li>Retangular equivalente pela fórmula da ASHRAE</li>
+        </ul>
+      </div>
+      <div class="showcase-img">
+        <img src="assets/screen-duct.png" alt="Módulo de dimensionamento de dutos do Ductus" loading="lazy">
+      </div>
+    </div>
+
+    <div class="module-showcase reverse">
+      <div class="showcase-copy">
+        <span class="showcase-idx">02</span>
+        <h2>Estimativa de carga térmica</h2>
+        <p>
+          Uma triagem por componentes para pré-dimensionar equipamento e checar
+          viabilidade. Separa carga sensível e latente, mostra o peso de cada fonte
+          e estima a vazão de insuflamento.
+        </p>
+        <ul class="check-list">
+          <li>Envoltória, pessoas, iluminação, equipamentos, ar externo</li>
+          <li>Resultado em kW, TR e W/m²</li>
+          <li>Sinaliza densidade de carga alta</li>
+        </ul>
+        <p class="showcase-note">
+          Estimativa de triagem, não projeto. Não substitui cálculo por NBR 16401 /
+          ASHRAE. Sob ART/RRT, o projeto final é do responsável técnico.
+        </p>
+      </div>
+      <div class="showcase-img">
+        <img src="assets/screen-load.png" alt="Módulo de carga térmica do Ductus" loading="lazy">
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== TECH ===================== -->
+  <section class="section wrap" id="tech">
+    <p class="section-tag">O que roda por baixo</p>
+    <div class="tech-grid">
+      <div class="tech-card">
+        <span class="tech-tag">Dutos — atrito</span>
+        <code>Δp/L = f · (1/D) · ρV²/2</code>
+        <p>f por Colebrook–White iterativo; laminar 64/Re abaixo de Re 2300.</p>
+      </div>
+      <div class="tech-card">
+        <span class="tech-tag">Retangular equivalente</span>
+        <code>D_eq = 1,30 · (a·b)^0,625 / (a+b)^0,25</code>
+        <p>Preserva vazão e perda de carga, não a área geométrica.</p>
+      </div>
+      <div class="tech-card">
+        <span class="tech-tag">Carga — sensível ar externo</span>
+        <code>Q_s = 1,2 · V̇ · ΔT</code>
+        <p>V̇ em L/s, ΔT em °C, resultado em W.</p>
+      </div>
+      <div class="tech-card">
+        <span class="tech-tag">Carga — latente ar externo</span>
+        <code>Q_l = 3010 · V̇ · Δw</code>
+        <p>Δw da umidade absoluta estimada por Tetens.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== INSTALL ===================== -->
+  <section class="section wrap" id="install">
+    <div class="install-box">
+      <div class="install-head">
+        <p class="section-tag" style="margin:0">Instalar como app</p>
+        <h2>Leva dez segundos e some a barra do navegador.</h2>
+      </div>
+      <div class="install-steps">
+        <div class="istep">
+          <span class="istep-os">Android · Chrome</span>
+          <p>Abra o app e toque em <strong>“Instalar app”</strong> no topo, ou no ícone de instalação da barra de endereço.</p>
+        </div>
+        <div class="istep">
+          <span class="istep-os">iPhone · Safari</span>
+          <p>Toque em <strong>Compartilhar</strong> e depois em <strong>“Adicionar à Tela de Início”</strong>.</p>
+        </div>
+        <div class="istep">
+          <span class="istep-os">Desktop · Chrome/Edge</span>
+          <p>Clique no ícone de <strong>instalação</strong> à direita da barra de endereço.</p>
+        </div>
+      </div>
+      <a class="btn btn-primary btn-lg" href="index.html">Abrir o app agora</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-inner">
+    <div>
+      <a class="brand" href="#top">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 40 40" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.4">
+            <path d="M5 12 L23 12 L35 6 M5 28 L23 28 L35 34 M23 12 L23 28" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="5" cy="20" r="2.6" fill="currentColor" stroke="none"/>
+          </svg>
+        </span>
+        <strong>Ductus</strong>
+      </a>
+      <p>Ferramenta educacional de triagem para HVAC-R. Verifique todo resultado crítico contra norma e catálogo de fabricante.</p>
+    </div>
+    <div class="foot-links">
+      <a href="index.html">Abrir app</a>
+      <a href="#" data-repo>GitHub</a>
+      <span class="foot-meta">MIT · sem coleta de dados</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var host = location.hostname;
+    document.querySelectorAll('[data-repo]').forEach(function(a){
+      if (host.endsWith('github.io')){
+        var user = host.split('.')[0];
+        var path = location.pathname.split('/').filter(Boolean)[0] || '';
+        a.href = 'https://github.com/' + user + '/' + path;
+      } else {
+        a.href = 'https://github.com';
+      }
+    });
+  })();
+</script>
+</body>
+</html>
